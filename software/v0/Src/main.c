@@ -21,7 +21,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <string.h>
+#include "freq_switcher.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -61,7 +62,11 @@ static void MX_USART2_UART_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
+	if (GPIO_Pin == BUTTON_Pin) {
+		vFreqSwitcherNextMode();
+	}
+}
 /* USER CODE END 0 */
 
 /**
@@ -98,48 +103,16 @@ int main(void)
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
 
-	// uncomment next line for using ODR register instead
-#define USE_ODR
-
-#ifndef USE_ODR
-	// buffer with states of port A BSRR
-	uint32_t puiGpioPortAStates[] =
-	{
-		1 << 5 | 1 << 22,	// pin 5 set, pin 6 set
-		1 << 6 | 1 << 21	// pin 5 reset, pin 6 set
-	};
-
-	// start DMA access between puiGpioPortAStates and GPIOA_BSRR
-	HAL_DMA_Start(&hdma_tim6_up, (uint32_t) puiGpioPortAStates,
-			(uint32_t) &GPIOA->BSRR, 2);
-#else
-	// buffer with states of port A ODR
-	uint32_t puiGpioPortAStates[] =
-	{
-		1 << 5,	// pin 5 set
-		1 << 6	// pin 6 set
-	};
-
-	// start DMA access between puiGpioPortAStates and GPIOA_ODR
-	HAL_DMA_Start(&hdma_tim6_up, (uint32_t) puiGpioPortAStates,
-			(uint32_t) &GPIOA->ODR, 2);
-#endif
+	vFreqSwitcherSetMode(0);
 
 	// Disable systick interrupt
 	// When enabled, this causes flickering
 	HAL_SuspendTick();
-
-	// enable tim6 DMA event
-	__HAL_TIM_ENABLE_DMA(&htim6, TIM_DMA_UPDATE);
-
-	// start tim6
-	HAL_TIM_Base_Start(&htim6);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 	while (1) {
-
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -290,8 +263,8 @@ static void MX_DMA_Init(void)
 static void MX_GPIO_Init(void)
 {
   GPIO_InitTypeDef GPIO_InitStruct = {0};
-/* USER CODE BEGIN MX_GPIO_Init_1 */
-/* USER CODE END MX_GPIO_Init_1 */
+  /* USER CODE BEGIN MX_GPIO_Init_1 */
+  /* USER CODE END MX_GPIO_Init_1 */
 
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOC_CLK_ENABLE();
@@ -300,17 +273,30 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, LED1_Pin|LED2_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, LED0_Pin|LED1_Pin|LED2_Pin|LED3_Pin
+                          |LED4_Pin|LED5_Pin|LED6_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pins : LED1_Pin LED2_Pin */
-  GPIO_InitStruct.Pin = LED1_Pin|LED2_Pin;
+  /*Configure GPIO pins : LED0_Pin LED1_Pin LED2_Pin LED3_Pin
+                           LED4_Pin LED5_Pin LED6_Pin */
+  GPIO_InitStruct.Pin = LED0_Pin|LED1_Pin|LED2_Pin|LED3_Pin
+                          |LED4_Pin|LED5_Pin|LED6_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-/* USER CODE BEGIN MX_GPIO_Init_2 */
-/* USER CODE END MX_GPIO_Init_2 */
+  /*Configure GPIO pin : BUTTON_Pin */
+  GPIO_InitStruct.Pin = BUTTON_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(BUTTON_GPIO_Port, &GPIO_InitStruct);
+
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
+
+  /* USER CODE BEGIN MX_GPIO_Init_2 */
+  /* USER CODE END MX_GPIO_Init_2 */
 }
 
 /* USER CODE BEGIN 4 */
