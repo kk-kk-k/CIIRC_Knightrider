@@ -1,7 +1,7 @@
 #include <assert.h>
 #include "timer.h"
 
-static unsigned int puiGpioPortAStates[] = {LED0_Pin, LED1_Pin, LED2_Pin, LED3_Pin, LED4_Pin, LED5_Pin, LED6_Pin};
+static unsigned int puiGpioPortAStates[] = {LED0_Pin, LED1_Pin};//, LED2_Pin, LED3_Pin, LED4_Pin, LED5_Pin, LED6_Pin};
 
 void vTimerUpdateValue(TIM_HandleTypeDef *const pxHtim,
 		DMA_HandleTypeDef *const pxDmaChannel,
