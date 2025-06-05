@@ -1,0 +1,29 @@
+Why is this solution not the right one
+
+Please have look at corresponding image HAL_GPIO_functions_measurement.png
+
+This time, the biggest error in our LED signal is caused by HAL function HAL_GPIO_WritePin
+	1) In ../Src/main.c, the followind code is executed
+	
+		file: ../Src/main.c, line 107
+			// turn off old LED
+			HAL_GPIO_WritePin(LED_PORT, puiGpioLedPins[iCurrentLed], GPIO_PIN_RESET);
+
+			// increment current led index
+			if (++iCurrentLed == 2)
+				iCurrentLed = 0;
+
+			// turn on new LED
+			HAL_GPIO_WritePin(LED_PORT, puiGpioLedPins[iCurrentLed], GPIO_PIN_SET);
+			
+		In other words, this code produces following:
+			1) reset old pin
+			2) increment LED
+			3) set new pin
+			
+		As you can see, incrementing LED index takes time. That causes setting and resetting pins being done in different time, which is not good.
+			- Maybe we could compute this in cameras, but that is not needed, as writing to ODR register (via DMA or manually) causes practically immediate switch of LED states practically simultaneously
+
+	3) Signal is not fast enough
+		- We need LED frequency around 1 MHz, 660 kHz is not enough
+		- HAL_GPIO_WritePin checks if PinState is set or reset state. This operation takes extra time. This computation is done automatically and much faster by DMA
