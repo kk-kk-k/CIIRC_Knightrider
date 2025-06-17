@@ -9,11 +9,11 @@ The device is fulfills the following parameters:
 	- The device is equipped with push button. When user press the button, the LED refresh rate changes. The device has three modes in which frequency may differ.
 - UART2 commands:
 	- The device handles UART2 commands. All the command manuals and help is embedded in the device.
->		**Note:** Type 'help' to receive quick help
+> **Note:** Type 'help' to receive quick help
 # EXECUTING
 This application is based on STM32F3 microcontroller family. When developing, you should not forget to:
 - Correctly wire hardware LED, push button etc.
->**Note:** Recommended hardware setup is in hardware/v0/schematics.pdf. Needed parts can be found in **DODELEJ**
+> **Note:** Recommended hardware setup is in hardware/v0/schematics.pdf. Needed parts can be found in **DODELEJ**
 - Install STM32 Cube IDE
 	- see download page https://www.st.com/en/development-tools/stm32cubeide.html and installation guide https://www.st.com/resource/en/user_manual/um2563-stm32cubeide-installation-guide-stmicroelectronics.pdf
 - Install STM32 Cube IDE toolchain
@@ -33,7 +33,7 @@ In the docs folder are stored measurements of device properties as well as alter
 | -------------- | ---------------------------- |
 | 0              | Created on prototyping board |
 | 1              | PCB available                |
-> **NOTE:** Version 0 is the hihest version available.
+> **Note:** Version 0 is the hihest version available.
 # CONTACTS
 - Jakub Kráľ
 	- email: jakub6kral@centrum.cz
